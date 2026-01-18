@@ -1,5 +1,5 @@
 % function [W_p_best, wc_best, c_best, SumRate_best, EHR_best] = rsma_SCA(h_IDR,h_EHR,P_max,Emin,wc,W_p, g_c, g_p, u_c, u_p)
-function [W_p_best, wc_best, SumRate_best] = rsma_SCA(h_IDR,h_EHR,P_max,Emin,wc,W_p, g_c, g_p, u_c, u_p)
+function [W_p_best, wc_best, SumRate_best] = rsma_SCA_cvx(h_IDR,h_EHR,P_max,Emin,wc,W_p, g_c, g_p, u_c, u_p)
 [~, K] = size(h_IDR);
 [Nt, J] = size(h_EHR);
 

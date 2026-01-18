@@ -25,6 +25,7 @@ xn_hist = [];
 SumRate_best = -inf;
 Loc_PA_best = Loc_PA;
 W_best = NaN;
+%先计算能否满足能量收集约束
 %best记录外层迭代的结果
 for iter = 1:maxiter
     % ==== 外层搜索PA位置 ====
