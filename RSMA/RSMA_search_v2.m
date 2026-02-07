@@ -4,12 +4,21 @@ function [SumRate_best,Loc_PA_best,W_best] = RSMA_search_v2(K,J,N,P_dBm_max,Emin
 
 P_max = 10.^((P_dBm_max-30)./10);
 
-Ns = 40;%波导上的离散位置个数
-candidates = linspace(-D_x/2,D_x/2,Ns+1);
+step = 0.5;%波导上的离散位置间距
+
 maxiter = 5;%目标函数是和速率，感觉不需要外层迭代了
 tolerance = 1e-1;
 
 %% 
+%可选位置
+candidates = -D_x/2:step:D_x/2;
+minPA = min([Loc_IDR(1,:),Loc_EHR(1,:)]) - step;
+maxPA = max([Loc_IDR(1,:),Loc_EHR(1,:)]) + step;
+candidates = candidates(candidates >=minPA  & candidates <= maxPA);
+if isempty(candidates)
+    candidates = (minPA + maxPA)/2;
+end
+
 %初始化PA位置，均为0
 Loc_PA=[zeros(1,N); ((0:N-1)+0.5)*D_y/N; d * ones(1,N)];
 %PA位置，初始化到EHR附近

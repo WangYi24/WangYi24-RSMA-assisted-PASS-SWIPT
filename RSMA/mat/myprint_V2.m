@@ -4,7 +4,7 @@ load('E[0.1-1]221.mat')
 plot(E_range*1e6,R_RSMA_iE,'ko-'),hold on
 % plot(E_range*1e6,sum(C_RSMA_iE),'ro-'),hold on
 
-load('E[0.1-1]231.mat')
+load('E[0.2-3]221_D20_P45.mat')
 plot(E_range*1e6,R_RSMA_iE,'ko--'),hold on
 % plot(E_range*1e6,sum(C_RSMA_iE),'ro--'),hold on
 
@@ -27,39 +27,35 @@ title('RSMA')
 
 %% P
 figure
-load('P[30-44]221_D10.mat')
+load('P[32-44]221_D10.mat')
 % plot(P_range,R_RSMA_iP*2,'ko-'),hold on
-subplot(211)
 plot(P_range,R_RSMA_iP,'ko-'),hold on
-subplot(212)
-plot(P_range,E_RSMA_iP,'ko-'),hold on
 % plot(P_range,sum(C_RSMA_iP),'rs-'),hold on
 
 load('P[30-44]221_D20.mat')
 % plot(P_range,R_RSMA_iP*3,'ko--'),hold on
-subplot(211)
-plot(P_range,R_RSMA_iP,'ro-'),hold on
-subplot(212)
-plot(P_range,E_RSMA_iP,'ro-'),hold on
+plot(P_range,R_RSMA_iP,'ko--'),hold on
 % plot(P_range,sum(C_RSMA_iP),'rs--'),hold on
 
-load('P[44]221_D30.mat')
+load('P[30-44]221_D30.mat')
 % plot(P_range,R_RSMA_iP*2,'ko-'),hold on
-subplot(211)
-plot(P_range,R_RSMA_iP,'bo-'),hold on
-subplot(212)
-plot(P_range,E_RSMA_iP,'bo-'),hold on
+plot(P_range,R_RSMA_iP,'b>-'),hold on
 % plot(P_range,sum(C_RSMA_iP),'rs-'),hold on
 
-load('P[44]221_D40.mat')
-% plot(P_range,R_RSMA_iP*2,'ko-'),hold on
-subplot(211)
-plot(P_range,R_RSMA_iP,'go-'),hold on
-subplot(212)
-plot(P_range,E_RSMA_iP,'go-'),hold on
+load('P_Conv[30-44]221_D10.mat')
+% plot(P_range,R_RSMA_iP*3,'ko--'),hold on
+plot(P_range,R_RSMA_iP,'b>--'),hold on
+
+load('P_Conv[30-44]221_D20.mat')
+% plot(P_range,R_RSMA_iP*3,'ko--'),hold on
+plot(P_range,R_RSMA_iP,'b>--'),hold on
+
+load('P_Conv[30-44]221_D30.mat')
+% plot(P_range,R_RSMA_iP*3,'ko--'),hold on
+plot(P_range,R_RSMA_iP,'b>--'),hold on
 
 
-% legend('SR,K=2','WSR,K=2','common rate,K=2','SR,K=3','WSR,K=3','common rate,K=3')
+legend('SR,K=2','WSR,K=2','common rate,K=2','SR,K=3','WSR,K=3','common rate,K=3')
 xlabel('P(dBm)')
 ylabel('WSR (bps/Hz)')
 % ylim([0 20]);

@@ -1,4 +1,4 @@
-clear
+   clear
 cvx_clear
 %% Emin
 % clear
@@ -10,21 +10,21 @@ cvx_clear
 % sigma2_dBm = -90;  % 噪声功率 (dBm)
 % sigma2 = 10.^((sigma2_dBm-30)./10);%噪声功率s
 % 
-% N = 1;
+% N = 2;
 % K = 2;
 % J = 1;
 % 
-% E_range = 3e-7:1e-7:7e-7;
+% E_range = 1e-6;
 % 
-% P=40;
-% ct = 20;%用户实现次数
+% P=45;
+% ct = 15;%用户实现次数
 % 
 % R_RSMA_iE = zeros(1,length(E_range)); 
 % E_RSMA_iE = zeros(J,length(E_range));
 % C_RSMA_iE = zeros(K,length(E_range));
 % 
-% % Loc_IDR_ct = [D_x*(rand(1,60)-0.5); D_y*rand(1,60); zeros(1,60)];
-% load('Loc_IDR_ct[60].mat')
+% loadfile = sprintf("Loc_IDR_ct[150]D%d.mat",D_x);
+% load(loadfile)
 % Loc_IDR_ct = Loc_IDR_ct(:,1:K*ct);
 % Loc_IDR_cell = mat2cell(Loc_IDR_ct, 3, repmat(K, 1, ct));
 % 
@@ -38,22 +38,26 @@ cvx_clear
 %     num_badpoint = 0;%坏点
 %     %固定EHR的位置
 %     % Loc_EHR = [zeros(1,J) - D_x/2 + ((0:J-1)+0.5)*D_x/J; ((0:J-1)+0.5)*D_y/J; zeros(1,J)];
-%     Loc_EHR = [D_x/4; D_y/2; 0];
+%     Loc_EHR = [5; D_y/2; 0];
 %     parfor it = 1:ct %Monte Carlo simulations   
-%         % fprintf('Worker processed it = %d\n', it);
+%         fprintf('Worker processed it = %d\n', it);
 %         %生成设备位置，列为该设备坐标
 %         Loc_IDR = Loc_IDR_cell{it};
 %         SumRate_hist=[];%记录迭代的目标函数
 %         xn_hist = [];
 %         SumRate_best = -inf;
-%         [SumRate_best,Loc_PA_best,W_best]= RSMA_search_v2(K,J,N,P,E,Loc_IDR,Loc_EHR,D_x,D_y,d,sigma2);
-%         % [SumRate_best,Loc_PA_best,W_best]= RSMA_fix_v2(K,J,N,P,E,Loc_IDR,Loc_EHR,D_x,D_y,d,sigma2);
+%         % [SumRate_best,Loc_PA_best,W_best]= RSMA_search_v2(K,J,N,P,E,Loc_IDR,Loc_EHR,D_x,D_y,d,sigma2);
+%         [SumRate_best,Loc_PA_best,W_best]= RSMA_fix_v2(K,J,N,P,E,Loc_IDR,Loc_EHR,D_x,D_y,d,sigma2);
 %         if SumRate_best==-inf
 %             num_badpoint = num_badpoint + 1;
 %         else
 %             wc = W_best(:,1);
 %             W_p = W_best(:,2:end);
 %             h_IDR = channel_Conv(Loc_PA_best, Loc_IDR);
+%             h_EHR = channel_Conv(Loc_PA_best, Loc_EHR);
+% 
+%             % h_IDR = channel(Loc_PA_best, Loc_IDR);
+%             % h_EHR = channel(Loc_PA_best, Loc_EHR);
 %             term_c = abs(h_IDR' * wc).^2;   % [K, 1]
 %             G = abs((h_IDR'*W_p)).^2;%得到 [K, K]
 %             c_ct(:,it) = log2(1+term_c./sum(G, 2));
@@ -65,7 +69,7 @@ cvx_clear
 %             end
 %             R_ct(:,it) = R_p+c_ct(:,it);
 % 
-%             h_EHR = channel_Conv(Loc_PA_best, Loc_EHR);
+% 
 %             term_c = abs(h_EHR' * wc).^2;     % [J, 1]
 %             h_W = h_EHR' * W_p;              % [J, K]
 %             term_p = sum(abs(h_W).^2, 2);  % 对每一行求和，得到 [J, 1]
@@ -76,7 +80,8 @@ cvx_clear
 %     R_RSMA_iE(:,iE) = sum(R_ct,"all")/K / (ct-num_badpoint);
 %     E_RSMA_iE(:,iE) = sum(EHR_ct,2) / (ct-num_badpoint);
 %     C_RSMA_iE(:,iE) = sum(c_ct,2) / (ct-num_badpoint);
-%     save("E.mat")
+%     filename = sprintf("E_Conv[%d-%d]221_D%d_P%d.mat",E_range(1),E_range(end),D_x,P);
+%     save(filename)
 % end
 % 
 % figure
@@ -87,16 +92,14 @@ cvx_clear
 % legend('WSR','common rate')
 % xlabel('E_{min}(W)')
 % ylabel('rate (bps/Hz)')
-% % ylim([30 46]);
-% xlim([2e-1 10e-1])
-% line([E_range(end-1)*1e6, E_range(end-1)*1e6], [0, R_RSMA_iE(end-1)],'Color', 'k')
+
 
 
 %% P
 clear
 cvx_clear
 
-D_x = 20;     %波导长度
+D_x = 40;     %波导长度
 D_y = 10;   %区域宽度
 d = 3;      %波导高 (k)
 sigma2_dBm = -90;  % 噪声功率 (dBm)
@@ -109,29 +112,30 @@ J = 1;
 E = 1e-7;
 
 P_range=44;
-ct = 20;%用户实现次数
+ct = 15;%用户实现次数
 
 R_RSMA_iP = zeros(1,length(P_range)); 
 E_RSMA_iP = zeros(J,length(P_range));
 C_RSMA_iP = zeros(K,length(P_range));
 
-% Loc_IDR_ct = [D_x*(rand(1,60)-0.5); D_y*rand(1,60); zeros(1,60)];
-load('Loc_IDR_ct[60].mat')
+Loc_IDR_ct = [D_x*(rand(1,150)-0.5); D_y*rand(1,150); zeros(1,150)];
+loadfile = sprintf("Loc_IDR_ct[150]D%d.mat",D_x);
+load(loadfile)
 Loc_IDR_ct = Loc_IDR_ct(:,1:K*ct);
 Loc_IDR_cell = mat2cell(Loc_IDR_ct, 3, repmat(K, 1, ct));
 
 
 for iP = 1:length(P_range)
     P = P_range(iP)
-    
+
     R_ct = zeros(K,ct); 
     EHR_ct = zeros(J,ct);
     c_ct = zeros(K,ct);
     num_badpoint = 0;%坏点
     %固定EHR的位置
     % Loc_EHR = [zeros(1,J) - D_x/2 + ((0:J-1)+0.5)*D_x/J; ((0:J-1)+0.5)*D_y/J; zeros(1,J)];
-    Loc_EHR = [D_x/4; D_y/2; 0];
-    parfor it = 1:ct %Monte Carlo simulations   
+    Loc_EHR = [5; D_y/2; 0];
+    for it = 1:ct %Monte Carlo simulations   
         fprintf('Worker processed it = %d\n', it);
         %生成设备位置，列为该设备坐标
         Loc_IDR = Loc_IDR_cell{it};
@@ -145,7 +149,12 @@ for iP = 1:length(P_range)
         else
             wc = W_best(:,1);
             W_p = W_best(:,2:end);
+
+            % h_IDR = channel_Conv(Loc_PA_best, Loc_IDR);
+            % h_EHR = channel_Conv(Loc_PA_best, Loc_EHR);
             h_IDR = channel(Loc_PA_best, Loc_IDR);
+            h_EHR = channel(Loc_PA_best, Loc_EHR);
+
             term_c = abs(h_IDR' * wc).^2;   % [K, 1]
             G = abs((h_IDR'*W_p)).^2;%得到 [K, K]
             c_ct(:,it) = log2(1+term_c./sum(G, 2));
@@ -156,8 +165,8 @@ for iP = 1:length(P_range)
                 R_p(k) = log2(1+SINR);
             end
             R_ct(:,it) = R_p+c_ct(:,it);
+
             
-            h_EHR = channel(Loc_PA_best, Loc_EHR);
             term_c = abs(h_EHR' * wc).^2;     % [J, 1]
             h_W = h_EHR' * W_p;              % [J, K]
             term_p = sum(abs(h_W).^2, 2);  % 对每一行求和，得到 [J, 1]
@@ -168,7 +177,8 @@ for iP = 1:length(P_range)
     R_RSMA_iP(:,iP) = sum(R_ct,"all")/K / (ct-num_badpoint);
     E_RSMA_iP(:,iP) = sum(EHR_ct,2) / (ct-num_badpoint);
     C_RSMA_iP(:,iP) = sum(c_ct,2) / (ct-num_badpoint);
-    save("E.mat")
+    filename = sprintf("P[%d]221_D%d.mat",P_range(iP),D_x);
+    save(filename)
 end
 
 figure
@@ -180,7 +190,6 @@ legend('WSR','common rate')
 xlabel('P(dBm)')
 ylabel('rate (bps/Hz)')
 % ylim([30 46]);
-% line([P_range(end-1)*1e6, P_range(end-1)*1e6], [0, R_RSMA_iP(end-1)],'Color', 'k')
 
 
 %% N
