@@ -1,12 +1,19 @@
 function [W_p_best, SumRate_best] = SDMA_wmmse(h_IDR,h_EHR,sigma2, P_max,Emin)
 % Rate-Splitting for Multi-User Multi-Antenna Wireless Information and Power Transfer
 [Nt, K] = size(h_IDR);
+[~, J] = size(h_EHR);
 
-W_p = h_IDR./vecnorm(h_IDR)  * sqrt(P_max);
+% 生成列索引：1,2,...,M,1,2,... 直到 N 个（当 M>=N 时自动截断为 1:N）
+col_idx = mod(0:K-1, J) + 1;
+% 对 B 按列索引重排，得到 R x N 矩阵
+h_EHR_resized = h_EHR(:, col_idx);
+
+% W_p = h_IDR./vecnorm(h_IDR)  * sqrt(P_max);
+W_p = h_IDR  * sqrt(P_p/trace(h_IDR'*h_IDR));
 W_p_best = W_p;
 SumRate_hist=[];
 
-tolerance = 1e-1;
+tolerance = 1e-2;
 SumRate_best = -inf;
 maxIter = 100;
 flag_max=5;%flag_max次没出现更大的目标函数就break
@@ -31,6 +38,11 @@ for n = 1:maxIter
     end
 
     [W_p, SumRate] = SDMA_SCA_cvx(h_IDR,h_EHR, P_max,Emin,W_p, g_p, u_p);
+    %无解的情况下，使用对准EHR的初始化
+    if n ==1 && (isnan(SumRate) || SumRate==-inf)
+        W_p = h_EHR_resized * sqrt(P_p/trace(h_EHR_resized'*h_EHR_resized));
+        continue
+    end
     if isnan(SumRate) || SumRate==-inf
         break;%
     end
