@@ -47,7 +47,7 @@ for it = 1:maxIter
             xi_c(k) = u_c(k)*epsilon_c(k) - log2(u_c(k));
             xi_p(k) = u_p(k)*epsilon_p(k) - log2(u_p(k));
         end
-
+        % EHR
         for j = 1:J
             EHR(j) = 2*real(wc_pre'*h_EHR(:,j)*h_EHR(:,j)'*wc)- A(j);
             for k =1:K
@@ -56,8 +56,8 @@ for it = 1:maxIter
             end
         end
 
-        t = sum(x) + sum(xi_p- 1/log(2) - log2(log(2)));
-    
+        % t = sum(x) + sum(xi_p- 1/log(2) - log2(log(2)));
+        t = sum(x) + sum(xi_p);
         minimise(t)
         subject to
             % 公共速率约束
@@ -79,6 +79,8 @@ for it = 1:maxIter
     end
     % SumRate_hist = [SumRate_hist,SumRate];
     %发现这里会震荡
+
+    
     if SumRate >= SumRate_best
         if SumRate - SumRate_best < tolerance
             SumRate_best = SumRate;

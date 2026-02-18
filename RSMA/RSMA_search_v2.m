@@ -23,7 +23,7 @@ end
 Loc_PA=[zeros(1,N); ((0:N-1)+0.5)*D_y/N; d * ones(1,N)];
 %PA位置，初始化到EHR附近
 for n = 1:N
-    % 计算所有IDR到第 i 个波导的y轴距离
+    % 计算所有EHR到第 i 个波导的y轴距离
     dist_y = Loc_EHR(2,:) - Loc_PA(2,n);      % K*1 - 1*1 = K*1
     [~, idx] = min(abs(dist_y));            % 获得最小距离点索引
     Loc_PA(1,n) = Loc_EHR(1,idx);            

@@ -4,7 +4,7 @@ function [Wp_best, wc_best, SumRate_best] = rsma_wmmse(h_IDR,h_EHR,sigma2, P_max
 [~, J] = size(h_EHR);
 
 P_c = P_max * 0.25;
-P_p = (P_max-P_c) / K;
+P_p = (P_max-P_c);
 
 % 生成列索引：1,2,...,M,1,2,... 直到 N 个（当 M>=N 时自动截断为 1:N）
 col_idx = mod(0:K-1, J) + 1;
@@ -13,17 +13,17 @@ h_EHR_resized = h_EHR(:, col_idx);
 
 % [U, ~, ~] = svd(h_EHR_resized);
 % Wp = h_EHR_resized./vecnorm(h_EHR_resized)  * sqrt(P_p);
-% wc = U(:, 1) * sqrt(P_c);
+% wc = U(:, 1)./vecnorm(h_EHR_resized) * sqrt(P_c);
 % maxIter = 1000;
 [U, ~, ~] = svd(h_IDR);
-Wp = h_IDR./vecnorm(h_IDR)  * sqrt(P_p);
+% Wp = h_IDR./vecnorm(h_IDR)  * sqrt(P_p);
+Wp = h_IDR  * sqrt(P_p/trace(h_IDR'*h_IDR));
 wc = U(:, 1) * sqrt(P_c);
-maxIter = 100;
 
 Wp_best = Wp;wc_best = wc;
 SumRate_hist=[];
 
-tolerance = 1e-1;
+tolerance = 1e-2;
 SumRate_best = -inf;
 maxIter = 100;
 flag_max=5;%flag_max次没出现更大的目标函数就break
@@ -59,7 +59,7 @@ for n = 1:maxIter
     %无解的情况下，使用对准EHR的初始化
     if n ==1 && (isnan(SumRate) || SumRate==-inf)
         [U, ~, ~] = svd(h_EHR_resized);
-        Wp = h_EHR_resized./vecnorm(h_EHR_resized)  * sqrt(P_p);
+        Wp = h_EHR_resized * sqrt(P_p/trace(h_EHR_resized'*h_EHR_resized));
         wc = U(:, 1) * sqrt(P_c);
         continue
     end
